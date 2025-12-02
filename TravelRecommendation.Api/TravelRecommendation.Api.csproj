@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TravelRecommendation.Application\TravelRecommendation.Application.csproj" />
+    <ProjectReference Include="..\TravelRecommendation.Infrastructure\TravelRecommendation.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

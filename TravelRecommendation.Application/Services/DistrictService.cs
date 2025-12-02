@@ -1,17 +1,17 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Text.Json;
-using TravelRecommendation.Domain;
+using Newtonsoft.Json;
+using System.Collections.Concurrent;
 using TravelRecommendation.Application.Interface;
+using TravelRecommendation.Domain;
 
 namespace TravelRecommendation.Application.Services
 {
-
     public class DistrictService : IDistrictService
     {
         private readonly ILogger<DistrictService> _logger;
         private readonly IWeatherService _weatherService;
         private readonly IAirQualityService _airQualityService;
-        private readonly List<Districts> _districts;
+        private readonly DistrictsRoot _districts;
 
         public DistrictService(  ILogger<DistrictService> logger, IWeatherService weatherService,  IAirQualityService airQualityService )
         {
@@ -26,31 +26,27 @@ namespace TravelRecommendation.Application.Services
         {
             _logger.LogInformation("Starting to calculate Top 10 districts...");
 
-            var summaries = new List<DistrictWeatherSummary>();
+            var districtsWeather = new ConcurrentBag<DistrictWeatherSummary>();
 
-            // Process all districts in parallel for better performance
-            var tasks = _districts.Select(async district =>
+            var options = new ParallelOptions
             {
-                try
+                MaxDegreeOfParallelism = 10
+            };
+
+            await Parallel.ForEachAsync(_districts.Districts, options, async (district, token) =>
+            {
+                DistrictWeatherSummary districtWeather = await ProcessDistrictAsync(district);
+                if (districtWeather != null)
                 {
-                    return await GetDistrictWeatherSummaryAsync(district);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error processing district {DistrictName}", district.Name);
-                    return null;
+                    districtsWeather.Add(districtWeather);
                 }
             });
 
-            var results = await Task.WhenAll(tasks);
 
-            // Filter out null results (failed API calls)
-            summaries = results.Where(r => r != null).ToList();
-
-            _logger.LogInformation("Successfully processed {Count} districts", summaries.Count);
+            _logger.LogInformation("Successfully processed {Count} districts", districtsWeather.Count);
 
             // Sort by temperature (ascending), then by PM2.5 (ascending) for ties
-            var top10 = summaries
+            var top10 = districtsWeather  // need to change here
                 .OrderBy(d => d.AvgTemperature)
                 .ThenBy(d => d.AvgPm25)
                 .Take(10)
@@ -71,7 +67,7 @@ namespace TravelRecommendation.Application.Services
             };
         }
 
-        private async Task<DistrictWeatherSummary> GetDistrictWeatherSummaryAsync(Districts district)
+        private async Task<DistrictWeatherSummary> ProcessDistrictAsync(Districts district)
         {
             // Call both APIs in parallel
             var weatherTask = _weatherService.GetWeatherForecastAsync(district.Latitude, district.Longitude);
@@ -133,7 +129,7 @@ namespace TravelRecommendation.Application.Services
             };
         }
 
-        private List<Districts> LoadDistrictsFromFile()
+        private DistrictsRoot LoadDistrictsFromFile()
         {
             try
             {
@@ -143,14 +139,11 @@ namespace TravelRecommendation.Application.Services
 
                 var json = File.ReadAllText(filePath);
 
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
+            
 
-                var result = JsonSerializer.Deserialize<List<Districts>>(json, options);
+              var result=  JsonConvert.DeserializeObject<DistrictsRoot>(json);
 
-                _logger.LogInformation("Loaded {Count} districts", result?.Count ?? 0);
+                _logger.LogInformation("Loaded {Count} districts", result?.Districts.Count ?? 0);
 
                 return result;
             }

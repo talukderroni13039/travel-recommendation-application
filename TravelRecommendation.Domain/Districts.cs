@@ -1,31 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-
+﻿
+using Newtonsoft.Json;
 namespace TravelRecommendation.Domain
 {
-        public class Districts
-           {
-            [JsonPropertyName("id")]
-            public int Id { get; set; }
 
-            [JsonPropertyName("division_id")]
-            public string DivisionId { get; set; }
+    public class DistrictsRoot
+    {
+        [JsonProperty("districts")]
+        public List<Districts> Districts { get; set; } = new List<Districts>();
+    }
 
-            [JsonPropertyName("name")]
-            public string Name { get; set; }
 
-            [JsonPropertyName("bn_name")]
-            public string BnName { get; set; }
+public class Districts
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
 
-            [JsonPropertyName("lat")]
+        [JsonProperty("division_id")]
+        public string DivisionId { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("bn_name")]
+        public string BnName { get; set; }
+
+        [JsonProperty("lat")]
         public double Latitude { get; set; }
 
-
-        [JsonPropertyName("long")]
+        [JsonProperty("long")]
         public double Longitude { get; set; }
     }
 
