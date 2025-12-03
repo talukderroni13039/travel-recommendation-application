@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TravelRecommendation.Application.DTO;
+using TravelRecommendation.Domain;
 
 namespace TravelRecommendation.Application.Interface
 {
-    public interface IAirQualityService
+    public interface IDistrictRepository
     {
-        Task<AirQualityApiResponse> GetAirQualityAsync(double latitude, double longitude);
+        Task<DistrictsRoot> LoadDistrictsFromFile();
     }
-
-
 }

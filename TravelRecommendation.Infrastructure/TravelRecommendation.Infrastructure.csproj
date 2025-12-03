@@ -20,4 +20,8 @@
     <ProjectReference Include="..\TravelRecommendation.Application\TravelRecommendation.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Cacheing\" />
+  </ItemGroup>
+
 </Project>

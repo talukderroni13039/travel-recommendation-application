@@ -3,11 +3,11 @@ using Newtonsoft.Json;
 namespace TravelRecommendation.Domain
 {
 
-    public class DistrictsRoot
-    {
-        [JsonProperty("districts")]
-        public List<Districts> Districts { get; set; } = new List<Districts>();
-    }
+public class DistrictsRoot
+{
+    [JsonProperty("districts")]
+    public List<Districts> Districts { get; set; } = new List<Districts>();
+}
 
 
 public class Districts

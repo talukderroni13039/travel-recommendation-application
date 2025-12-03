@@ -7,7 +7,7 @@ using TravelRecommendation.Application.DTO;
 
 namespace TravelRecommendation.Application.Services
 {
-    public interface IWeatherService
+    public interface IWeatherApiClient
     {
         Task<WeatherApiResponse> GetWeatherForecastAsync(double latitude, double longitude);
     }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System.Collections.Concurrent;
+using TravelRecommendation.Application.DTO;
 using TravelRecommendation.Application.Interface;
 using TravelRecommendation.Domain;
 
@@ -8,29 +8,29 @@ namespace TravelRecommendation.Application.Services
 {
     public class DistrictService : IDistrictService
     {
+        private readonly IDistrictRepository _districtRepository;
         private readonly ILogger<DistrictService> _logger;
-        private readonly IWeatherService _weatherService;
-        private readonly IAirQualityService _airQualityService;
-        private readonly DistrictsRoot _districts;
+        private readonly IWeatherApiClient _weatherService;
+        private readonly IAirQualityApiClient _airQualityService;
 
-        public DistrictService(  ILogger<DistrictService> logger, IWeatherService weatherService,  IAirQualityService airQualityService )
+        public DistrictService(IDistrictRepository districtRepository, ILogger<DistrictService> logger, IWeatherApiClient weatherService, IAirQualityApiClient airQualityService)
         {
             _logger = logger;
-             _weatherService = weatherService;
+            _weatherService = weatherService;
             _airQualityService = airQualityService;
-            _districts = LoadDistrictsFromFile();
+            _districtRepository=districtRepository; 
+
         }
-
-
         public async Task<Top10Response> GetTop10DistrictsAsync()
         {
             _logger.LogInformation("Starting to calculate Top 10 districts...");
 
-            var districtsWeather = new ConcurrentBag<DistrictWeatherSummary>();
+            var _districts =await _districtRepository.LoadDistrictsFromFile();
 
+            var districtsWeather = new ConcurrentBag<DistrictWeatherSummary>();
             var options = new ParallelOptions
             {
-                MaxDegreeOfParallelism = 10
+                MaxDegreeOfParallelism = 5
             };
 
             await Parallel.ForEachAsync(_districts.Districts, options, async (district, token) =>
@@ -42,21 +42,25 @@ namespace TravelRecommendation.Application.Services
                 }
             });
 
-
             _logger.LogInformation("Successfully processed {Count} districts", districtsWeather.Count);
 
             // Sort by temperature (ascending), then by PM2.5 (ascending) for ties
-            var top10 = districtsWeather  // need to change here
-                .OrderBy(d => d.AvgTemperature)
-                .ThenBy(d => d.AvgPm25)
+            var top10 = districtsWeather
+                .Select(d => new
+                {
+                    d.DistrictName,
+                    AvgTemperature = Math.Round(d.AvgTemperature, 1),
+                    AvgPm25 = Math.Round(d.AvgPm25, 1)
+                })
+                .OrderBy(d => d.AvgTemperature)    // Sort by rounded temperature
+                .ThenBy(d => d.AvgPm25)            // Then by rounded PM2.5
                 .Take(10)
                 .Select((d, index) => new DistrictRank
                 {
                     Rank = index + 1,
                     DistrictName = d.DistrictName,
-                    AvgTemperature = Math.Round(d.AvgTemperature, 1),
-                    AvgPm25 = Math.Round(d.AvgPm25, 1),
-                    AirQualityStatus = GetAirQualityStatus(d.AvgPm25)
+                    AvgTemperature = d.AvgTemperature,
+                    AvgPm25 = d.AvgPm25,
                 })
                 .ToList();
 
@@ -115,67 +119,19 @@ namespace TravelRecommendation.Application.Services
             return values2PM;
         }
 
-        private string GetAirQualityStatus(double pm25)
-        {
-            // Based on US EPA Air Quality Index for PM2.5
-            return pm25 switch
-            {
-                <= 12 => "Good",
-                <= 35.4 => "Moderate",
-                <= 55.4 => "Unhealthy for Sensitive Groups",
-                <= 150.4 => "Unhealthy",
-                <= 250.4 => "Very Unhealthy",
-                _ => "Hazardous"
-            };
-        }
-
-        private DistrictsRoot LoadDistrictsFromFile()
-        {
-            try
-            {
-                var filePath = Path.Combine(AppContext.BaseDirectory, "Data", "bd-districts.json");
-
-                _logger.LogInformation("Loading districts from {FilePath}", filePath);
-
-                var json = File.ReadAllText(filePath);
-
-            
-
-              var result=  JsonConvert.DeserializeObject<DistrictsRoot>(json);
-
-                _logger.LogInformation("Loaded {Count} districts", result?.Districts.Count ?? 0);
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading districts from file");
-                throw;
-            }
-        }
+        //private string GetAirQualityStatus(double pm25)
+        //{
+        //    // Based on US EPA Air Quality Index for PM2.5
+        //    return pm25 switch
+        //    {
+        //        <= 12 => "Good",
+        //        <= 35.4 => "Moderate",
+        //        <= 55.4 => "Unhealthy for Sensitive Groups",
+        //        <= 150.4 => "Unhealthy",
+        //        <= 250.4 => "Very Unhealthy",
+        //        _ => "Hazardous"
+        //    };
+        //}
     }
-    public class Top10Response
-    {
-        public DateTime GeneratedAt { get; set; }
-        public List<DistrictRank> Districts { get; set; }
-    }
-    public class DistrictRank
-    {
-        public int Rank { get; set; }
-        public string DistrictName { get; set; }
-        public double AvgTemperature { get; set; }
-        public double AvgPm25 { get; set; }
-        public string AirQualityStatus { get; set; }
-    }
-    public class DistrictWeatherSummary
-    {
-        public string DistrictId { get; set; }
-        public string DistrictName { get; set; }
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
-        public double AvgTemperature { get; set; }
-        public double AvgPm25 { get; set; }
-    }
-
-
 }
+

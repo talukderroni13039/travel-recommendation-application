@@ -1,6 +1,9 @@
 
 using TravelRecommendation.Application.Interface;
 using TravelRecommendation.Application.Services;
+using TravelRecommendation.Infrastructure.ExternalApis;
+using TravelRecommendation.Infrastructure.ExternalApiService;
+using TravelRecommendation.Infrastructure.Repositories;
 
 namespace TravelRecommendation
 {
@@ -13,11 +16,9 @@ namespace TravelRecommendation
             // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-           //  builder.Services.AddOpenApi();
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
             builder.Services.AddSwaggerGen();
-            // Register DistrictService as Singleton (data loaded once)
-            builder.Services.AddSingleton<IDistrictService, DistrictService>();
 
             // Register HttpClientFactory for future Weather/AirQuality API calls
             builder.Services.AddHttpClient("OpenMeteo", client =>
@@ -32,9 +33,10 @@ namespace TravelRecommendation
                 client.Timeout = TimeSpan.FromSeconds(30);
             });
 
-            builder.Services.AddSingleton<IWeatherService, WeatherService>();
-            builder.Services.AddSingleton<IAirQualityService, AirQualityService>();
+            builder.Services.AddSingleton<IWeatherApiClient, WeatherApiClient>();
+            builder.Services.AddSingleton<IAirQualityApiClient, AirQualityApiClient>();
             builder.Services.AddSingleton<IDistrictService, DistrictService>();
+            builder.Services.AddSingleton<IDistrictRepository, DistrictRepository>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -44,10 +46,7 @@ namespace TravelRecommendation
                 app.UseSwaggerUI();
             }
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-
             app.MapControllers();
 
             app.Run();

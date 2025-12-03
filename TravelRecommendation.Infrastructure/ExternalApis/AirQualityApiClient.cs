@@ -7,15 +7,16 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using TravelRecommendation.Application.DTO;
+using TravelRecommendation.Application.Interface;
 
-namespace TravelRecommendation.Application.Interface
+namespace TravelRecommendation.Infrastructure.ExternalApiService
 {
-    public class AirQualityService : IAirQualityService
+    public class AirQualityApiClient : IAirQualityApiClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<AirQualityService> _logger;
+        private readonly ILogger<AirQualityApiClient> _logger;
 
-        public AirQualityService(IHttpClientFactory httpClientFactory, ILogger<AirQualityService> logger)
+        public AirQualityApiClient(IHttpClientFactory httpClientFactory, ILogger<AirQualityApiClient> logger)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;

@@ -6,15 +6,16 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using TravelRecommendation.Application.DTO;
+using TravelRecommendation.Application.Services;
 
-namespace TravelRecommendation.Application.Services
+namespace TravelRecommendation.Infrastructure.ExternalApis
 {
-    public class WeatherService : IWeatherService
+    public class WeatherApiClient : IWeatherApiClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<WeatherService> _logger;
+        private readonly ILogger<WeatherApiClient> _logger;
 
-        public WeatherService(IHttpClientFactory httpClientFactory, ILogger<WeatherService> logger)
+        public WeatherApiClient(IHttpClientFactory httpClientFactory, ILogger<WeatherApiClient> logger)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
