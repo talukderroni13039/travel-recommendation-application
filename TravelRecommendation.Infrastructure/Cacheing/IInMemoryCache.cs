@@ -55,7 +55,7 @@ namespace Backend.Infrastructure.Cacheing.InMemory
                 {
                     AbsoluteExpirationRelativeToNow = _expiration
                 };
-
+              //  var serializedValue = JsonSerializer.Serialize(value);
                 _memoryCache.Set(key, value, options);
                 return Task.CompletedTask;
             }

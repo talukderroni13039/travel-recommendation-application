@@ -11,7 +11,7 @@ namespace TravelRecommendation
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -37,12 +37,23 @@ namespace TravelRecommendation
 
             builder.Services.AddSingleton<IWeatherApiClient, WeatherApiClient>();
             builder.Services.AddSingleton<IAirQualityApiClient, AirQualityApiClient>();
-            builder.Services.AddSingleton<IDistrictService, DistrictService>();
+            builder.Services.AddScoped<IDistrictService, DistrictService>();
             builder.Services.AddSingleton<IDistrictRepository, DistrictRepository>();
             builder.Services.AddMemoryCache();
-            builder.Services.AddScoped<IInMemoryCache, InMemoryCache>();
+            builder.Services.AddSingleton<IInMemoryCache, InMemoryCache>();
 
             var app = builder.Build();
+
+            // initialize cache at startup for response time<500ms from first request
+            using (var scope = app.Services.CreateScope())
+            {
+                var cache = scope.ServiceProvider.GetRequiredService<IInMemoryCache>();
+                var districtService = scope.ServiceProvider.GetRequiredService<IDistrictService>();
+
+                var data = await districtService.GetTop10DistrictsAsync();
+                await cache.SetAsync("Top10Districts", data);
+            }
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -53,7 +64,6 @@ namespace TravelRecommendation
             app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();
-
             app.Run();
         }
     }

@@ -6,5 +6,6 @@
         Task<bool>   SetData<T>(string key, T value, DateTimeOffset expirationTime);
         Task<bool>  RemoveData(string key);
         Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> factory);
+        Task  SetAsync<T>(string key, T value);   
     }
 }
