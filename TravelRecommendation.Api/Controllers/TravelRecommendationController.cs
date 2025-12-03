@@ -6,7 +6,7 @@ using TravelRecommendation.Application.Interface;
 
 namespace TravelRecommendation.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/weather")]
     [ApiController]
     public class TravelRecommendationController : ControllerBase
     {
@@ -20,22 +20,38 @@ namespace TravelRecommendation.Api.Controllers
         }   
         public readonly ILogger<TravelRecommendationController> _logger;
 
-        [HttpGet("top10")]
+        [HttpGet("top10-districts")]
         public async Task<IActionResult> GetTop10Districts()
         {
-            _logger.LogInformation("Top 10 districts request received");
+            try
+            {
+                _logger.LogInformation("Request started: GET /api/districts/top10");
 
-            var result = await _cacheService.GetOrSetAsync(
-                      "Top10Districts",
-                       async () => await _districtService.GetTop10DistrictsAsync()
-                   );
+                var result = await _cacheService.GetOrSetAsync(
+                            "Top10Districts",
+                            async () => await _districtService.GetTop10DistrictsAsync()
+                        );
 
-            _logger.LogInformation("Request completed: GET /api/districts/top10");
+                _logger.LogInformation("Request completed: GET /api/districts/top10");
+
+                    return Ok(result);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+                throw;
+            }
+        }
+        [HttpPost("recommendation")]
+        public async Task<IActionResult> GetTravelRecommendation(double latitude,double longitude, string destinationDistrict, DateTime travelDate)
+        {
+            _logger.LogInformation("Request: POST /api/travel/recommendation");
+            var result = await _travelService.GetRecommendationAsync(latitude,longitude, destinationDistrict,travelDate);
 
             return Ok(result);
         }
 
-        
-      
+
+
     }
 }

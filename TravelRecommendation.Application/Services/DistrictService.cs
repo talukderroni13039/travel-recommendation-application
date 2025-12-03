@@ -25,7 +25,7 @@ namespace TravelRecommendation.Application.Services
         {
             _logger.LogInformation("Starting to calculate Top 10 districts...");
 
-            var _districts =await _districtRepository.LoadDistrictsFromFile();
+            var _districts = _districtRepository.GetAllDistricts();
 
             var districtsWeather = new ConcurrentBag<DistrictWeatherSummary>();
             var options = new ParallelOptions
@@ -33,7 +33,7 @@ namespace TravelRecommendation.Application.Services
                 MaxDegreeOfParallelism = 5
             };
 
-            await Parallel.ForEachAsync(_districts.Districts, options, async (district, token) =>
+            await Parallel.ForEachAsync(_districts, options, async (district, token) =>
             {
                 DistrictWeatherSummary districtWeather = await ProcessDistrictAsync(district);
                 if (districtWeather != null)

@@ -9,6 +9,7 @@ namespace TravelRecommendation.Application.Interface
 {
     public interface IDistrictRepository
     {
-        Task<DistrictsRoot> LoadDistrictsFromFile();
+        List<Districts> GetAllDistricts();
+        Districts GetDistrictByName(string name);
     }
 }
