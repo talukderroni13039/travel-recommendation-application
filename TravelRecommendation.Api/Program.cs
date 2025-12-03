@@ -1,4 +1,6 @@
 
+using Backend.Application.Interface.Caching;
+using Backend.Infrastructure.Cacheing.InMemory.Backend.Infrastructure.Cacheing.InMemory;
 using TravelRecommendation.Application.Interface;
 using TravelRecommendation.Application.Services;
 using TravelRecommendation.Infrastructure.ExternalApis;
@@ -37,6 +39,9 @@ namespace TravelRecommendation
             builder.Services.AddSingleton<IAirQualityApiClient, AirQualityApiClient>();
             builder.Services.AddSingleton<IDistrictService, DistrictService>();
             builder.Services.AddSingleton<IDistrictRepository, DistrictRepository>();
+            builder.Services.AddMemoryCache();
+            builder.Services.AddScoped<IInMemoryCache, InMemoryCache>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

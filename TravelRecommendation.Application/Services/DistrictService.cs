@@ -30,7 +30,7 @@ namespace TravelRecommendation.Application.Services
             var districtsWeather = new ConcurrentBag<DistrictWeatherSummary>();
             var options = new ParallelOptions
             {
-                MaxDegreeOfParallelism = 5
+                MaxDegreeOfParallelism = 10
             };
 
             await Parallel.ForEachAsync(_districts.Districts, options, async (district, token) =>
