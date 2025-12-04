@@ -10,6 +10,7 @@ namespace TravelRecommendation.Application.Interface
     public interface IDistrictRepository
     {
         List<Districts> GetAllDistricts();
+        Districts GetDistrictByCoordinates(double latitude, double longitude);
         Districts GetDistrictByName(string name);
     }
 }

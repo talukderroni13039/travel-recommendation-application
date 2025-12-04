@@ -21,11 +21,11 @@ namespace TravelRecommendation.Infrastructure.ExternalApis
             _logger = logger;
         }
 
-        public async Task<WeatherApiResponse> GetWeatherForecastAsync(double latitude, double longitude)
+        public async Task<WeatherApiResponse> GetWeatherForecastAsync(double latitude, double longitude, string startDate,string endDate)
         {
             var client = _httpClientFactory.CreateClient("OpenMeteo");
 
-            var url = $"v1/forecast?latitude={latitude}&longitude={longitude}&hourly=temperature_2m&forecast_days=7";
+            var url = $"v1/forecast?latitude={latitude}&longitude={longitude}&hourly=temperature_2m&start_date={startDate}&end_date={endDate}";
 
             _logger.LogDebug("Calling Weather API: {Url}", url);
 

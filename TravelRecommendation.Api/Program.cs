@@ -41,7 +41,7 @@ namespace TravelRecommendation
             builder.Services.AddSingleton<IDistrictRepository, DistrictRepository>();
             builder.Services.AddMemoryCache();
             builder.Services.AddSingleton<IInMemoryCache, InMemoryCache>();
-
+            builder.Services.AddSingleton<ITravelRecommendationService, TravelRecommendationService>();
             var app = builder.Build();
 
             // initialize cache at startup for response time<500ms from first request

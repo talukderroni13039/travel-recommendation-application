@@ -73,9 +73,12 @@ namespace TravelRecommendation.Application.Services
 
         private async Task<DistrictWeatherSummary> ProcessDistrictAsync(Districts district)
         {
+            var startDate = DateTime.Now.ToString("yyyy-MM-dd"); ;
+            var endDate = DateTime.Now.AddDays(6).ToString("yyyy-MM-dd"); ;
+
             // Call both APIs in parallel
-            var weatherTask = _weatherService.GetWeatherForecastAsync(district.Latitude, district.Longitude);
-            var airQualityTask = _airQualityService.GetAirQualityAsync(district.Latitude, district.Longitude);
+            var weatherTask = _weatherService.GetWeatherForecastAsync(district.Latitude, district.Longitude,startDate, endDate);
+            var airQualityTask = _airQualityService.GetAirQualityAsync(district.Latitude, district.Longitude, startDate, endDate);
 
             await Task.WhenAll(weatherTask, airQualityTask);
 

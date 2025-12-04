@@ -1,11 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using TravelRecommendation.Application.DTO;
 using TravelRecommendation.Application.Interface;
 
@@ -22,11 +16,16 @@ namespace TravelRecommendation.Infrastructure.ExternalApiService
             _logger = logger;
         }
 
-        public async Task<AirQualityApiResponse> GetAirQualityAsync(double latitude, double longitude)
+        public async Task<AirQualityApiResponse> GetAirQualityAsync(double latitude, double longitude,string startDate, string endDate)
         {
-            var client = _httpClientFactory.CreateClient("AirQuality");
 
-            var url = $"v1/air-quality?latitude={latitude}&longitude={longitude}&hourly=pm2_5&forecast_days=7";
+            var client = _httpClientFactory.CreateClient("AirQuality");
+            var url = $"v1/air-quality?latitude={latitude}&longitude={longitude}&hourly=pm2_5&start_date={startDate}&end_date={endDate}";
+
+
+            //var client = _httpClientFactory.CreateClient("AirQuality");
+
+            //var url = $"v1/air-quality?latitude={latitude}&longitude={longitude}&hourly=pm2_5&forecast_days=16";
 
             _logger.LogDebug("Calling Air Quality API: {Url}", url);
 

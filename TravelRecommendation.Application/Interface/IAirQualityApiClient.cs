@@ -9,7 +9,7 @@ namespace TravelRecommendation.Application.Interface
 {
     public interface IAirQualityApiClient
     {
-        Task<AirQualityApiResponse> GetAirQualityAsync(double latitude, double longitude);
+        Task<AirQualityApiResponse> GetAirQualityAsync(double latitude, double longitude, string startDate, string endDate);
     }
 
 

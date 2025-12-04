@@ -9,6 +9,6 @@ namespace TravelRecommendation.Application.Services
 {
     public interface IWeatherApiClient
     {
-        Task<WeatherApiResponse> GetWeatherForecastAsync(double latitude, double longitude);
+        Task<WeatherApiResponse> GetWeatherForecastAsync(double latitude, double longitude, string startDate,string endDate);
     }
 }

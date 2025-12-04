@@ -24,11 +24,14 @@ namespace TravelRecommendation.Application.Services
 
         public async Task<TravelRecommendationResponse> GetRecommendationAsync(double latitude, double longitude, string destinationDistrict, DateTime travelDate)
         {
+           
             // Step 2: Get destination district
-            var currentDistrict = _districtRepository.GetDistrictByName(destinationDistrict);
-
-            var currentLocationTask = FetchWeatherForLocationAsync(currentDistrict.Latitude, currentDistrict.Longitude, currentDistrict.Name, travelDate);
-            var destinationTask = FetchWeatherForLocationAsync(latitude, longitude, destinationDistrict, travelDate);
+            var destinationDistrictInfo = _districtRepository.GetDistrictByName(destinationDistrict);
+            var currentDistrictInfo = _districtRepository.GetDistrictByCoordinates(latitude, longitude);  
+            
+            var currentLocationTask = FetchWeatherForLocationAsync(latitude, longitude, currentDistrictInfo.Name, travelDate);
+            var destinationTask = FetchWeatherForLocationAsync(destinationDistrictInfo.Latitude, destinationDistrictInfo.Longitude, destinationDistrictInfo.Name, travelDate);
+         
 
             await Task.WhenAll(currentLocationTask, destinationTask);
 
@@ -43,16 +46,24 @@ namespace TravelRecommendation.Application.Services
         {
             try
             {
-                var weatherTask = _weatherApiClient.GetWeatherForecastAsync(latitude, longitude);
-                var airQualityTask = _airQualityApiClient.GetAirQualityAsync(latitude, longitude);
+
+                var startDate= travelDate.ToString("yyyy-MM-dd");
+                var endDate = travelDate.ToString("yyyy-MM-dd");
+
+                var weatherTask = _weatherApiClient.GetWeatherForecastAsync(latitude, longitude, startDate,endDate);
+                var airQualityTask = _airQualityApiClient.GetAirQualityAsync(latitude, longitude, startDate, endDate);
 
                 await Task.WhenAll(weatherTask, airQualityTask);
 
-                var weatherResult = await weatherTask;
-                var airQualityResult = await airQualityTask;
+                var weatherResult =  weatherTask.Result;
+                var airQualityResult =  airQualityTask.Result;
 
-                var dayOffset = (travelDate.Date - DateTime.UtcNow.Date).Days;
-                int index = (dayOffset * 24) + Hour2PM;
+                //var dayOffset = (travelDate.Date - DateTime.UtcNow.Date).Days;
+                //int index = (dayOffset * 24) + Hour2PM;
+
+                // For single date, just use the hour directly
+                const int Hour2PM = 14; // 2 PM
+                int index = Hour2PM;
 
 
                 var temperature = weatherResult.Hourly.Temperature2m[index];

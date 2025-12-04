@@ -32,34 +32,40 @@ namespace TravelRecommendation.Infrastructure.Repositories
                 return  _districtsData
                                .FirstOrDefault(d => d.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             }
+            public Districts GetDistrictByCoordinates(double latitude,double longitude)
+            {
+                return _districtsData
+                               .FirstOrDefault(d => d.Latitude.Equals(latitude)&& d.Longitude.Equals(longitude));
+            }
+
 
     }
 
 
 
 
-        //public async Task<DistrictsRoot> LoadDistrictsFromFile()
-        //{
-        //    try
-        //    {
-        //        var filePath = Path.Combine(AppContext.BaseDirectory, "Data", "bd-districts.json");
+    //public async Task<DistrictsRoot> LoadDistrictsFromFile()
+    //{
+    //    try
+    //    {
+    //        var filePath = Path.Combine(AppContext.BaseDirectory, "Data", "bd-districts.json");
 
-        //        _logger.LogInformation("Loading districts from {FilePath}", filePath);
+    //        _logger.LogInformation("Loading districts from {FilePath}", filePath);
 
-        //        var json =await File.ReadAllTextAsync(filePath);
-        //        var result = JsonConvert.DeserializeObject<DistrictsRoot>(json);
+    //        var json =await File.ReadAllTextAsync(filePath);
+    //        var result = JsonConvert.DeserializeObject<DistrictsRoot>(json);
 
-        //        _logger.LogInformation("Loaded {Count} districts", result?.Districts.Count ?? 0);
+    //        _logger.LogInformation("Loaded {Count} districts", result?.Districts.Count ?? 0);
 
-        //        return result;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error loading districts from file");
-        //        throw;
-        //    }
-        //}
+    //        return result;
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        _logger.LogError(ex, "Error loading districts from file");
+    //        throw;
+    //    }
+    //}
 
 
-    
+
 }

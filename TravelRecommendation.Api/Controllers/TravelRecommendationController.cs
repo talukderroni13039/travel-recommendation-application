@@ -12,11 +12,13 @@ namespace TravelRecommendation.Api.Controllers
     {
         public readonly IDistrictService _districtService;
         private readonly IInMemoryCache _cacheService;
-        public TravelRecommendationController(IInMemoryCache icacheService, ILogger<TravelRecommendationController> logger, IDistrictService districtService)
+        private readonly ITravelRecommendationService _travelRecommendationService;
+        public TravelRecommendationController(ITravelRecommendationService travelRecommendationService,  IInMemoryCache icacheService, ILogger<TravelRecommendationController> logger, IDistrictService districtService)
         {
             _logger = logger;
             _districtService = districtService;
-            _cacheService= icacheService;   
+            _cacheService= icacheService;
+            _travelRecommendationService = travelRecommendationService;
         }   
         public readonly ILogger<TravelRecommendationController> _logger;
 
@@ -34,7 +36,7 @@ namespace TravelRecommendation.Api.Controllers
 
                 _logger.LogInformation("Request completed: GET /api/districts/top10");
 
-                    return Ok(result);
+                 return Ok(result);
             }
             catch (Exception)
             {
@@ -46,7 +48,8 @@ namespace TravelRecommendation.Api.Controllers
         public async Task<IActionResult> GetTravelRecommendation(double latitude,double longitude, string destinationDistrict, DateTime travelDate)
         {
             _logger.LogInformation("Request: POST /api/travel/recommendation");
-            var result = await _travelService.GetRecommendationAsync(latitude,longitude, destinationDistrict,travelDate);
+
+            var result = await _travelRecommendationService.GetRecommendationAsync(latitude,longitude, destinationDistrict,travelDate);
 
             return Ok(result);
         }
