@@ -66,14 +66,12 @@ namespace TravelRecommendation.Application.Services
                 int index = Hour2PM;
 
 
-                var temperature = weatherResult.Hourly.Temperature2m[index];
-                var pm25 = airQualityResult.Hourly.Pm25[index];
+                var temperature = GetValueAtIndex(weatherResult.Hourly.Temperature2m, index);
+                var pm25 = GetValueAtIndex(airQualityResult.Hourly.Pm25, index);
 
-                if (!temperature.HasValue || !pm25.HasValue)
-                {
-                    _logger.LogWarning("Null values at index for: {Name}", locationName);
-                    return null;
-                }
+
+                //var temperature = weatherResult.Hourly.Temperature2m[index];
+                //var pm25 = airQualityResult.Hourly.Pm25[index];
 
                 return new LocationWeatherInfo
                 {
@@ -81,8 +79,8 @@ namespace TravelRecommendation.Application.Services
                     Latitude = latitude,
                     Longitude = longitude,
                     Date = travelDate.Date,
-                    TemperatureAt2PM = Math.Round(temperature.Value, 1),
-                    Pm25At2PM = Math.Round(pm25.Value, 1),
+                    TemperatureAt2PM = Math.Round(temperature, 1),
+                    Pm25At2PM = Math.Round(pm25, 1),
 
                 };
             }
@@ -92,7 +90,14 @@ namespace TravelRecommendation.Application.Services
                 return null;
             }
         }
-
+        private double GetValueAtIndex(List<double?> values, int index)
+        {
+            if (index >= 0 && index < values.Count && values[index].HasValue)
+            {
+                return values[index].Value;
+            }
+            return 0; // Default to 0 if null or out of bounds
+        }
         private TravelRecommendationResponse GenerateRecommendation(LocationWeatherInfo current, LocationWeatherInfo destination)
         {
             double tempDiff = current.TemperatureAt2PM - destination.TemperatureAt2PM;

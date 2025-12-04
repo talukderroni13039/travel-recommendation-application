@@ -74,7 +74,7 @@ namespace TravelRecommendation.Application.Services
         private async Task<DistrictWeatherSummary> ProcessDistrictAsync(Districts district)
         {
             var startDate = DateTime.Now.ToString("yyyy-MM-dd"); ;
-            var endDate = DateTime.Now.AddDays(6).ToString("yyyy-MM-dd"); ;
+            var endDate = DateTime.Now.AddDays(5).ToString("yyyy-MM-dd");// air quality limitations for 7 days
 
             // Call both APIs in parallel
             var weatherTask = _weatherService.GetWeatherForecastAsync(district.Latitude, district.Longitude,startDate, endDate);

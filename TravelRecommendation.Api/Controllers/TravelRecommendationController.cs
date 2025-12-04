@@ -1,5 +1,7 @@
 ﻿using Backend.Application.Interface.Caching;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
+using TravelRecommendation.Application.DTO;
 using TravelRecommendation.Application.Interface;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -38,13 +40,14 @@ namespace TravelRecommendation.Api.Controllers
            
         }
         [HttpPost("recommendation")]
-        public async Task<IActionResult> GetTravelRecommendation(double latitude,double longitude, string destinationDistrict, DateTime travelDate)
+        public async Task<IActionResult> GetTravelRecommendation([FromQuery] TravelRecommendationRequest request)
         {
             _logger.LogInformation("Request: POST /api/travel/recommendation");
 
-            var s = 10;
-            var r = s / 0;
-            var result = await _travelRecommendationService.GetRecommendationAsync(latitude,longitude, destinationDistrict,travelDate);
+            var travelDate = DateTime.ParseExact(request.TravelDate,  "yyyy-MM-dd",CultureInfo.InvariantCulture);
+            var result = await _travelRecommendationService.GetRecommendationAsync(request.Latitude,request.Longitude,request.DestinationDistrict, travelDate);
+            
+            _logger.LogInformation("Request completed: POST /api/travel/recommendation");
 
             return Ok(result);
         }

@@ -3,11 +3,13 @@ using Backend.Application.Interface.Caching;
 using Backend.Infrastructure.Cacheing.InMemory.Backend.Infrastructure.Cacheing.InMemory;
 using TravelRecommendation.Application.Interface;
 using TravelRecommendation.Application.Middleware;
+using TravelRecommendation.Application.NewFolder;
 using TravelRecommendation.Application.Services;
 using TravelRecommendation.Infrastructure.ExternalApis;
 using TravelRecommendation.Infrastructure.ExternalApiService;
 using TravelRecommendation.Infrastructure.Repositories;
-
+using FluentValidation;
+using FluentValidation.AspNetCore;
 namespace TravelRecommendation
 {
     public class Program
@@ -43,6 +45,11 @@ namespace TravelRecommendation
             builder.Services.AddMemoryCache();
             builder.Services.AddSingleton<IInMemoryCache, InMemoryCache>();
             builder.Services.AddSingleton<ITravelRecommendationService, TravelRecommendationService>();
+
+            builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.AddValidatorsFromAssemblyContaining<TravelRecommendationRequestValidator>();
+
+
             var app = builder.Build();
 
             // initialize cache at startup for response time<500ms from first request
