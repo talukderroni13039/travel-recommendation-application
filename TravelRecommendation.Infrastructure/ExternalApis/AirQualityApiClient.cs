@@ -39,6 +39,7 @@ namespace TravelRecommendation.Infrastructure.ExternalApiService
                 PropertyNameCaseInsensitive = true
             };
 
+
             return JsonSerializer.Deserialize<AirQualityApiResponse>(json, options);
         }
     }
