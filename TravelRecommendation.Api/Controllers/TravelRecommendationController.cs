@@ -25,8 +25,6 @@ namespace TravelRecommendation.Api.Controllers
         [HttpGet("top10-districts")]
         public async Task<IActionResult> GetTop10Districts()
         {
-            try
-            {
                 _logger.LogInformation("Request started: GET /api/districts/top10");
 
                 var result = await _cacheService.GetOrSetAsync(
@@ -37,18 +35,15 @@ namespace TravelRecommendation.Api.Controllers
                 _logger.LogInformation("Request completed: GET /api/districts/top10");
 
                  return Ok(result);
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-                throw;
-            }
+           
         }
         [HttpPost("recommendation")]
         public async Task<IActionResult> GetTravelRecommendation(double latitude,double longitude, string destinationDistrict, DateTime travelDate)
         {
             _logger.LogInformation("Request: POST /api/travel/recommendation");
 
+            var s = 10;
+            var r = s / 0;
             var result = await _travelRecommendationService.GetRecommendationAsync(latitude,longitude, destinationDistrict,travelDate);
 
             return Ok(result);

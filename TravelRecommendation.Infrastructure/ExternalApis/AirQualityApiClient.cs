@@ -22,9 +22,6 @@ namespace TravelRecommendation.Infrastructure.ExternalApiService
             var client = _httpClientFactory.CreateClient("AirQuality");
             var url = $"v1/air-quality?latitude={latitude}&longitude={longitude}&hourly=pm2_5&start_date={startDate}&end_date={endDate}";
 
-
-            //var client = _httpClientFactory.CreateClient("AirQuality");
-
             //var url = $"v1/air-quality?latitude={latitude}&longitude={longitude}&hourly=pm2_5&forecast_days=16";
 
             _logger.LogDebug("Calling Air Quality API: {Url}", url);

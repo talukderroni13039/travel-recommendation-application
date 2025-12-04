@@ -2,6 +2,7 @@
 using Backend.Application.Interface.Caching;
 using Backend.Infrastructure.Cacheing.InMemory.Backend.Infrastructure.Cacheing.InMemory;
 using TravelRecommendation.Application.Interface;
+using TravelRecommendation.Application.Middleware;
 using TravelRecommendation.Application.Services;
 using TravelRecommendation.Infrastructure.ExternalApis;
 using TravelRecommendation.Infrastructure.ExternalApiService;
@@ -61,6 +62,7 @@ namespace TravelRecommendation
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseMiddleware<GlobalExceptionHandler>();
             app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();
