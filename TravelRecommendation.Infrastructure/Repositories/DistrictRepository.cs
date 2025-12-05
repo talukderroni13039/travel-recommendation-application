@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using TravelRecommendation.Application.Interface;
+using TravelRecommendation.Application.Interface.Repositories;
 using TravelRecommendation.Domain;
 
 namespace TravelRecommendation.Infrastructure.Repositories
@@ -27,12 +27,12 @@ namespace TravelRecommendation.Infrastructure.Repositories
             {
               return _districtsData;
             }
-            public Districts GetDistrictByName(string name)
+            public Districts? GetDistrictByName(string name)
             {
                 return  _districtsData
                                .FirstOrDefault(d => d.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             }
-            public Districts GetDistrictByCoordinates(double latitude,double longitude)
+            public Districts? GetDistrictByCoordinates(double latitude,double longitude)
             {
                 return _districtsData
                                .FirstOrDefault(d => d.Latitude.Equals(latitude)&& d.Longitude.Equals(longitude));

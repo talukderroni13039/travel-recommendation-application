@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using TravelRecommendation.Application.DTO;
+using TravelRecommendation.Application.DTO.Requests;
 namespace TravelRecommendation.Application.NewFolder
 {
     public class TravelRecommendationRequestValidator : AbstractValidator<TravelRecommendationRequest>
@@ -25,27 +25,30 @@ namespace TravelRecommendation.Application.NewFolder
                 .WithMessage("District name must not exceed 100 characters");
 
             RuleFor(x => x.TravelDate)
-              .Cascade(CascadeMode.Stop) // ✅ Stops at first error
-              .NotEmpty()
-             .WithMessage("Travel date is required")
-             .Must(BeValidFormat)
-             .WithMessage("Travel date must be in yyyy-MM-dd format (e.g., 2025-01-02)")
-             .Must(BeValidDate)
-             .WithMessage("Travel date must be a valid date")
-             .Must(BeTodayOrFuture)
-             .WithMessage("Travel date cannot be in the past")
-             .Must(BeWithinForecastRange)
-             .WithMessage("Travel date must be within the next 6 days due to air quality forecast availability limitations");
+                .Cascade(CascadeMode.Stop) // ✅ Stops at first error
+                .NotEmpty()
+                .WithMessage("Travel date is required")
+                .Must(BeValidFormat)
+                .WithMessage("Travel date must be in yyyy-MM-dd format (e.g., 2025-01-02)")
+                .Must(BeValidDate)
+                .WithMessage("Travel date must be a valid date")
+                .Must(BeTodayOrFuture)
+                .WithMessage("Travel date cannot be in the past")
+                .Must(BeWithinForecastRange)
+                .WithMessage(x =>
+                    {
+                            var today = DateTime.Now.Date;
+                            var maxDate = today.AddDays(5);
+                            return $"Travel date must be between {today:dd-MM-yyyy} and {maxDate:dd-MM-yyyy}. Open-Meteo Air Quality API provides forecasts for only 5 days ahead.";
+                    });
         }
-
-        // Check if original query string matches yyyy-MM-dd format
         private bool BeValidFormat(string travelDate)
         {
             if (string.IsNullOrWhiteSpace(travelDate)) return false;
             var regex = new Regex(@"^\d{4}-\d{2}-\d{2}$");
             return regex.IsMatch(travelDate);
         }
-
+        // Check if original query string matches yyyy-MM-dd format
         private bool BeValidDate(string travelDate)
         {
             return DateTime.TryParseExact(travelDate,  "yyyy-MM-dd",  CultureInfo.InvariantCulture,  DateTimeStyles.None,  out _);

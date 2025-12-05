@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TravelRecommendation.Application.DTO
+namespace TravelRecommendation.Application.DTO.Responses
 {
     public class TravelRecommendationResponse
     {
@@ -27,6 +27,6 @@ namespace TravelRecommendation.Application.DTO
         public DateTime Date { get; set; }
         public double TemperatureAt2PM { get; set; }
         public double Pm25At2PM { get; set; }
-        public string AirQualityStatus { get; set; } = string.Empty;
+  
     }
 }

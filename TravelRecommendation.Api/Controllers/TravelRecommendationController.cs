@@ -1,10 +1,8 @@
-﻿using Backend.Application.Interface.Caching;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
-using TravelRecommendation.Application.DTO;
+using TravelRecommendation.Application.DTO.Requests;
 using TravelRecommendation.Application.Interface;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using TravelRecommendation.Application.Interface.Caching;
 
 namespace TravelRecommendation.Api.Controllers
 {
@@ -29,10 +27,9 @@ namespace TravelRecommendation.Api.Controllers
         {
                 _logger.LogInformation("Request started: GET /api/districts/top10");
 
-                var result = await _cacheService.GetOrSetAsync(
-                            "Top10Districts",
-                            async () => await _districtService.GetTop10DistrictsAsync()
-                        );
+                var result = await _cacheService.GetOrSetAsync("Top10Districts",
+                                                                    async () => await _districtService.GetTop10DistrictsAsync()
+                                                              );
 
                 _logger.LogInformation("Request completed: GET /api/districts/top10");
 
@@ -45,8 +42,13 @@ namespace TravelRecommendation.Api.Controllers
             _logger.LogInformation("Request: POST /api/travel/recommendation");
 
             var travelDate = DateTime.ParseExact(request.TravelDate,  "yyyy-MM-dd",CultureInfo.InvariantCulture);
-            var result = await _travelRecommendationService.GetRecommendationAsync(request.Latitude,request.Longitude,request.DestinationDistrict, travelDate);
-            
+            var cacheKey = $"travel:recommendation:{Math.Round(request.Latitude, 2)}:{Math.Round(request.Longitude, 2)}" +
+                                                                 $":{request.DestinationDistrict}:{travelDate:yyyy-MM-dd}";
+
+            var result = await _cacheService.GetOrSetAsync(cacheKey,
+                                                            async () => await  _travelRecommendationService.GetRecommendationAsync(request.Latitude, request.Longitude, request.DestinationDistrict, travelDate)
+                                                          );
+
             _logger.LogInformation("Request completed: POST /api/travel/recommendation");
 
             return Ok(result);

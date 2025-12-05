@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using TravelRecommendation.Application.DTO;
-using TravelRecommendation.Application.Services;
+using TravelRecommendation.Application.DTO.Responses;
+using TravelRecommendation.Application.Interface.ExternalApis;
 
 namespace TravelRecommendation.Infrastructure.ExternalApis
 {

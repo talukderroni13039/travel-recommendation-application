@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TravelRecommendation.Domain;
 
-namespace TravelRecommendation.Application.Interface
+namespace TravelRecommendation.Application.Interface.Repositories
 {
     public interface IDistrictRepository
     {

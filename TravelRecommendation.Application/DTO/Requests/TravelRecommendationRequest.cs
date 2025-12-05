@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TravelRecommendation.Application.DTO
+namespace TravelRecommendation.Application.DTO.Requests
 {
     public class TravelRecommendationRequest
     {

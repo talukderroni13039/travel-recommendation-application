@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Text.Json;
-using TravelRecommendation.Application.DTO;
-using TravelRecommendation.Application.Interface;
+using TravelRecommendation.Application.DTO.Responses;
+using TravelRecommendation.Application.Interface.ExternalApis;
 
-namespace TravelRecommendation.Infrastructure.ExternalApiService
+namespace TravelRecommendation.Infrastructure.ExternalApis
 {
     public class AirQualityApiClient : IAirQualityApiClient
     {
@@ -18,6 +18,12 @@ namespace TravelRecommendation.Infrastructure.ExternalApiService
 
         public async Task<AirQualityApiResponse> GetAirQualityAsync(double latitude, double longitude,string startDate, string endDate)
         {
+
+            try
+            {
+
+           
+
 
             var client = _httpClientFactory.CreateClient("AirQuality");
             var url = $"v1/air-quality?latitude={latitude}&longitude={longitude}&hourly=pm2_5&start_date={startDate}&end_date={endDate}";
@@ -36,8 +42,14 @@ namespace TravelRecommendation.Infrastructure.ExternalApiService
                 PropertyNameCaseInsensitive = true
             };
 
-
             return JsonSerializer.Deserialize<AirQualityApiResponse>(json, options);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
     }
 }

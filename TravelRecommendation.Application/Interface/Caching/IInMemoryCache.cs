@@ -1,4 +1,5 @@
-﻿namespace Backend.Application.Interface.Caching
+﻿
+namespace TravelRecommendation.Application.Interface.Caching
 {
     public interface IInMemoryCache
     {

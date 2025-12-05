@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TravelRecommendation.Application.Services;
-
-namespace TravelRecommendation.Application.DTO
+﻿
+namespace TravelRecommendation.Application.DTO.Responses
 {
     public class Top10Response
     {
@@ -18,6 +12,5 @@ namespace TravelRecommendation.Application.DTO
         public string DistrictName { get; set; }
         public double AvgTemperature { get; set; }
         public double AvgPm25 { get; set; }
-       // public string AirQualityStatus { get; set; }
     }
 }

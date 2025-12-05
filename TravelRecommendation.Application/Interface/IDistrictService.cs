@@ -1,4 +1,4 @@
-﻿using TravelRecommendation.Application.DTO;
+﻿using TravelRecommendation.Application.DTO.Responses;
 
 namespace TravelRecommendation.Application.Interface
 {

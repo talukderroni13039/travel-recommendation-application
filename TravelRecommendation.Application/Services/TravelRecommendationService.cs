@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using TravelRecommendation.Application.DTO;
+using TravelRecommendation.Application.DTO.Responses;
 using TravelRecommendation.Application.Interface;
+using TravelRecommendation.Application.Interface.ExternalApis;
+using TravelRecommendation.Application.Interface.Repositories;
 
 namespace TravelRecommendation.Application.Services
 {
@@ -10,10 +12,6 @@ namespace TravelRecommendation.Application.Services
         private readonly IWeatherApiClient _weatherApiClient;
         private readonly IAirQualityApiClient _airQualityApiClient;
         private readonly ILogger<TravelRecommendationService> _logger;
-
-        private const int ForecastDays = 7;
-        private const int Hour2PM = 14;
-
         public TravelRecommendationService(  IDistrictRepository districtRepository, IWeatherApiClient weatherApiClient, IAirQualityApiClient airQualityApiClient, ILogger<TravelRecommendationService> logger)
         {
             _districtRepository = districtRepository;
@@ -24,8 +22,8 @@ namespace TravelRecommendation.Application.Services
 
         public async Task<TravelRecommendationResponse> GetRecommendationAsync(double latitude, double longitude, string destinationDistrict, DateTime travelDate)
         {
-           
-            // Step 2: Get destination district
+
+            // Step 1: Get destination district and current location district
             var destinationDistrictInfo = _districtRepository.GetDistrictByName(destinationDistrict);
             var currentDistrictInfo = _districtRepository.GetDistrictByCoordinates(latitude, longitude);  
             
@@ -38,7 +36,7 @@ namespace TravelRecommendation.Application.Services
             var currentLocationWeather = await currentLocationTask;
             var destinationWeather = await destinationTask;
 
-            // Step 5: Generate recommendation
+            // Step 2: Generate recommendation
             return GenerateRecommendation(currentLocationWeather, destinationWeather);
         }
 
@@ -68,10 +66,6 @@ namespace TravelRecommendation.Application.Services
 
                 var temperature = GetValueAtIndex(weatherResult.Hourly.Temperature2m, index);
                 var pm25 = GetValueAtIndex(airQualityResult.Hourly.Pm25, index);
-
-
-                //var temperature = weatherResult.Hourly.Temperature2m[index];
-                //var pm25 = airQualityResult.Hourly.Pm25[index];
 
                 return new LocationWeatherInfo
                 {
@@ -145,8 +139,5 @@ namespace TravelRecommendation.Application.Services
                 }
             };
         }
-
-
-
     }
 }
