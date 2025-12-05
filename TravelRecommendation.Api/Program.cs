@@ -30,17 +30,33 @@ namespace TravelRecommendation
             builder.Services.AddSingleton<IInMemoryCache, InMemoryCache>();
 
             // Register HttpClientFactory for future Weather/AirQuality API calls
+            //builder.Services.AddHttpClient("OpenMeteo", client =>
+            //{
+            //    client.BaseAddress = new Uri("https://api.open-meteo.com/");
+            //    client.Timeout = TimeSpan.FromSeconds(30);
+            //});
+
+            //builder.Services.AddHttpClient("AirQuality", client =>
+            //{
+            //    client.BaseAddress = new Uri("https://air-quality-api.open-meteo.com/");
+            //    client.Timeout = TimeSpan.FromSeconds(30);
+            //});
+
             builder.Services.AddHttpClient("OpenMeteo", client =>
             {
-                client.BaseAddress = new Uri("https://api.open-meteo.com/");
-                client.Timeout = TimeSpan.FromSeconds(30);
+                client.BaseAddress = new Uri(builder.Configuration["OpenMeteoApi:WeatherBaseUrl"]);
+                client.Timeout = TimeSpan.FromSeconds(
+                    int.Parse(builder.Configuration["OpenMeteoApi:Timeout"]));
             });
 
             builder.Services.AddHttpClient("AirQuality", client =>
             {
-                client.BaseAddress = new Uri("https://air-quality-api.open-meteo.com/");
-                client.Timeout = TimeSpan.FromSeconds(30);
+                client.BaseAddress = new Uri(builder.Configuration["OpenMeteoApi:AirQualityBaseUrl"]);
+                client.Timeout = TimeSpan.FromSeconds(
+                    int.Parse(builder.Configuration["OpenMeteoApi:Timeout"]));
             });
+
+
             //  DI for services and repositories    
             builder.Services.AddSingleton<IWeatherApiClient, WeatherApiClient>();
             builder.Services.AddSingleton<IAirQualityApiClient, AirQualityApiClient>();
